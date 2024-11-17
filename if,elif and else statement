@@ -27,3 +27,22 @@ if sales_type == 2:
       sales_bonus = sales_bonus + 2
 else:
    sales_bonus = sales_bonus + 1
+
+-----------------------------------------------------------------------------------
+HERE IS THE CODE TO CALCULATE 'RB' BONUS 
+sales_type = str(input())
+PVC = int(input())
+
+if sales_type == 'RB':  # Assuming 'RB' is the correct type
+   if PVC < 2000:
+      sales_bonus = PVC / 2
+   else:
+      sales_bonus = PVC * 1.5
+else:
+   # Here, if you want to add something to sales_bonus, you need to define it first.
+   # If sales_bonus is not yet defined, you could do:
+   sales_bonus = 0  # Initialize sales_bonus
+   sales_bonus += 1  # Add 1 to sales_bonus
+
+print(sales_bonus)  # Just to see the result
+
