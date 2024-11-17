@@ -17,3 +17,13 @@ elif year>=1901:
     print('20th century')
 else:
     print('Long ago')
+
+
+-----------------------------------------------------------------------------------------
+if sales_type == 2:
+   if sales_bonus < 5:
+      sales_bonus = 10
+   else:
+      sales_bonus = sales_bonus + 2
+else:
+   sales_bonus = sales_bonus + 1
