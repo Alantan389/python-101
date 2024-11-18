@@ -107,5 +107,55 @@ else:
         print("Winter")
 
 
+---------------------------------------------------------------
+Write a program with total change amount as an integer input, and output the change using the fewest coins, one coin type per line. The coin types are Dollars, Quarters, Dimes, Nickels, and Pennies. Use singular and plural coin names as appropriate, 
+like 1 Penny vs. 2 Pennies.
+
+def calculate_change(total_change):
+    if total_change <= 0:
+        return "No change"
+
+    change_list = []
+
+    # Dollars
+    if total_change >= 100:
+        dollars = total_change // 100
+        change_list.append(f"{dollars} Dollar{'s' if dollars != 1 else ''}")
+        total_change %= 100
+
+    # Quarters
+    if total_change >= 25:
+        quarters = total_change // 25
+        change_list.append(f"{quarters} Quarter{'s' if quarters != 1 else ''}")
+        total_change %= 25
+
+    # Dimes
+    if total_change >= 10:
+        dimes = total_change // 10
+        change_list.append(f"{dimes} Dime{'s' if dimes != 1 else ''}")
+        total_change %= 10
+
+    # Nickels
+    if total_change >= 5:
+        nickels = total_change // 5
+        change_list.append(f"{nickels} Nickel{'s' if nickels != 1 else ''}")
+        total_change %= 5
+
+    # Pennies
+    if total_change > 0:
+        pennies = total_change
+        change_list.append(f"{pennies} Penny{'ies' if pennies != 1 else ''}")
+
+    return "\n".join(change_list)
+
+try:
+    total = int(input(""))
+    print(calculate_change(total))
+except ValueError:
+    print("Please enter a valid integer.")
+except EOFError:
+    print("Input was terminated unexpectedly.")
+except Exception as e:
+    print(f"An error occurred: {e}")
 
 
