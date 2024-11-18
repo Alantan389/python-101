@@ -59,6 +59,21 @@ elif tweet == 'IRL':
 else:
     print("Sorry, don't know that one")
 
+--------------------------------------------------------------------
+## Write a program whose inputs are three integers, and whose output is the smallest of the three values.
+
+Integers1 = int(input())
+Integers2= int(input())
+Integers3= int(input())
+
+if Integers1 <= Integers2 and Integers1 <= Integers3:
+    smallest = Integers1
+elif Integers2 <= Integers1 and Integers2 <= Integers3:
+    smallest = Integers2
+else:
+    smallest= Integers3
+    
+print(smallest)
 
 
 
