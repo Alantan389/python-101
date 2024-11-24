@@ -1,5 +1,8 @@
-count loop. 
+count loop.  
+### 
 
+
+##### calculate the total negative number when input is 0
 # Initialize count variable
 count = 0
 
@@ -17,3 +20,26 @@ while val != 0:
 
 # Print the total count of negative numbers
 print("Total number of negative values entered:", count)
+
+
+
+
+
+
+##### calculate the max number when input is 0
+# Initialize max to a value lower than any possible positive input
+max = -1
+
+# Get the first input
+val = int(input("Enter a positive number (enter 0 when done): "))
+
+while val != 0:
+    # (A) Check if the current value is greater than max
+    if val > max:
+        # (B) Update max if it is
+        max = val
+
+    # Get the next input
+    val = int(input("Enter next number (enter 0 when done): "))
+
+print("The maximum value is:", max)
