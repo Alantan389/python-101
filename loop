@@ -1,0 +1,19 @@
+count loop. 
+
+# Initialize count variable
+count = 0
+
+# Get the first input from the user
+val = int(input("Enter a number (0 to stop): "))
+
+# Loop until the user enters 0
+while val != 0:
+    # Check if the input value is negative
+    if val < 0:
+        count += 1  # Increment the counter for negative numbers
+    
+    # Get the next input
+    val = int(input("Enter a number (it will not stop until input 0): "))
+
+# Print the total count of negative numbers
+print("Total number of negative values entered:", count)
