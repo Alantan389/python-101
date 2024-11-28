@@ -333,5 +333,43 @@ if num_rolls >= 1:
 else:
     print('Invalid number of rolls. Try again.')
 
+-------------------------------------------------------------------------------
 
+
+
+import random
+
+# Generate a random number between -1000 and 1000
+num = random.randint(1, 100)
+
+print("Higher/Lower Game!")
+print("Guess a number between 1 and 100. You have 5 attempts.")
+
+# Game loop with 5 attempts
+for attempt in range(5):
+    try:
+        # Get user's guess
+        guess = int(input(f"Attempt {attempt + 1}/5: Your guess: "))
+
+        # Check if the guess is out of range
+        if guess < 1 or guess > 100:
+            print("Out of range! Try a number between 1 and 100.")
+            continue
+
+        # Check the guess
+        if guess == num:
+            print(f"Bingo! The number was {num}.")
+            break
+        elif guess < num:
+            print("Higher!")
+        else:
+            print("Lower!")
+    except ValueError:
+        print("Not a valid number. Try again!")
+
+    # Check if this was the last attempt
+    if attempt == 4:
+        print(f"Game over! The number was {num}.")
+
+# Loop ends here, no need for else
 
