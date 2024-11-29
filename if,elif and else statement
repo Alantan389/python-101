@@ -159,3 +159,50 @@ except Exception as e:
     print(f"An error occurred: {e}")
 
 
+
+updated version of game :
+
+import random
+
+print("Welcome to the higher/lower game, Bella!")
+
+# Let the player choose the bounds
+lower_bound = int(input("Enter the lower bound: "))
+upper_bound = int(input("Enter the upper bound: "))
+
+# Ensure the upper bound is greater than the lower bound
+while upper_bound <= lower_bound:
+    print("The upper bound must be greater than the lower bound.")
+    upper_bound = int(input("Enter the upper bound again: "))
+
+# Generate a random number within the specified bounds
+num = random.randint(lower_bound, upper_bound)
+
+print("Great! Now guess a number between", lower_bound, "and", upper_bound)
+
+# Game loop
+for attempt in range(5):
+    try:
+        # Prompt for user guess
+        guess = int(input("Guess another number: "))
+        
+        # Check if guess is out of bounds
+        if guess < lower_bound or guess > upper_bound:
+            print("Out of range! Try a number between", lower_bound, "and", upper_bound)
+            continue
+
+        # Compare guess with the number
+        if guess == num:
+            print("You got it!")
+            break
+        elif guess < num:
+            print("Nope, too low.")
+        else:
+            print("Nope, too high.")
+    except ValueError:
+        print("Not a valid number. Try again!")
+
+else:
+    # If the loop completes without a correct guess
+    print("Game over! The number was", num)
+
