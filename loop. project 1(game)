@@ -216,6 +216,198 @@ class Game:
 if __name__ == "__main__":
     game = Game()
     game.play()
+_____________________________________________________________________________________________________________
 
 
+
+import random
+
+class Game:
+    def __init__(self):
+        self.rooms = {
+            "Entrance": {"South": "Guard Post"},
+            "Guard Post": {"North": "Entrance", "East": "Cell Block A", "South": "Kitchen"},
+            "Cell Block A": {"West": "Guard Post", "South": "Secret Passage"},
+            "Kitchen": {"North": "Guard Post", "West": "Maintenance Room", "East": "Cell Block B"},
+            "Cell Block B": {"West": "Kitchen", "South": "Infirmary"},
+            "Maintenance Room": {"East": "Kitchen", "South": "Control Room"},
+            "Laundry": {"South": "Control Room", "West": "Maintenance Room"},
+            "Control Room": {"North": "Maintenance Room", "East": "Laundry", "West": "Warden's Office"},
+            "Warden's Office": {"East": "Control Room"},
+            "Secret Passage": {"North": "Cell Block A", "East": "Infirmary"},
+            "Infirmary": {"West": "Secret Passage", "North": "Cell Block B"}
+        }
+        self.collectibles = {
+            "Guard Post": "code1",
+            "Cell Block A": "code2",
+            "Cell Block B": "code3",
+            "Kitchen": "code4",
+            "Maintenance Room": "code5",
+            "Laundry": "code6",
+            "Control Room": "code7"
+        }
+        self.items = {
+            "Guard Post": ["code1", "Old Magazine", "Broken Flashlight"],
+            "Cell Block A": ["code2", "Broken Mirror", "Mysterious Note"],
+            "Cell Block B": ["code3", "Dirty Clothes", "Guard's Key"],
+            "Kitchen": ["code4", "Rusty Spoon", "Fresh Apple"],
+            "Maintenance Room": ["code5", "Burnt Lightbulb", "Wire Cutters"],
+            "Laundry": ["code6", "Torn Shirt", "Laundry Cart"],
+            "Control Room": ["code7", "Expired Coffee", "Monitor"],
+            "Secret Passage": ["Map Piece", "Rusty Knife"],
+            "Infirmary": ["Medikit", "Antidote"]
+        }
+        self.player_position = "Entrance"
+        self.inventory = []
+        self.health = 100
+        self.puzzles = {
+            "Cell Block A": {"solved": False, "question": "What is the sum of 7 and 8?", "answer": "15"},
+            "Kitchen": {"solved": False, "question": "Solve: X + 5 = 10", "answer": "5"}
+        }
+        self.traps = {
+            "Maintenance Room": {"active": True, "damage": 20},
+            "Secret Passage": {"active": True, "damage": 30}
+        }
+
+    def valid_directions(self):
+        return list(self.rooms[self.player_position].keys())
+
+    def get_map_hint(self, current_position):
+        map_hint = "Current Map:\n"
+        for room in self.rooms:
+            line = "   "
+            if room == current_position:
+                line += f"-> {room} <-"
+            else:
+                line += f"   {room}   "
+            
+            # Add connections for each room in a simplified manner
+            connections = []
+            for direction, connected_room in self.rooms[room].items():
+                if connected_room == current_position:
+                    connections.append(f"{direction[0].upper()}")
+                else:
+                    connections.append(f"{direction[0].lower()}")
+            line += f" ({','.join(connections)})"
+            map_hint += line + "\n"
+        return map_hint
+
+    def move(self, direction):
+        if direction in self.valid_directions():
+            new_room = self.rooms[self.player_position][direction]
+            self.player_position = new_room
+            print(f"You moved to {self.player_position}.")
+            print(self.get_map_hint(self.player_position))
+            if new_room in self.traps and self.traps[new_room]["active"]:
+                damage = self.traps[new_room]["damage"]
+                self.health -= damage
+                print(f"You triggered a trap and took {damage} damage! Your health is now {self.health}.")
+                self.traps[new_room]["active"] = False  
+                if self.health <= 0:
+                    print("You've lost all your health. Game over.")
+                    return False
+            if self.player_position == "Warden's Office" and len(self.collectibles) > 0:
+                print("You encountered the Warden before collecting all the codes. Game over!")
+                return False
+        else:
+            print("Invalid direction, please try again.")
+        return True
+
+    def get_item(self):
+        if self.player_position in self.items:
+            print(f"Items in this room: {', '.join(self.items[self.player_position])}")
+            item_to_get = input("Which item do you want to pick up? (or press Enter to cancel): ").strip().lower()
+            if item_to_get in [item.lower() for item in self.items[self.player_position]]:
+                if item_to_get in self.collectibles.values():
+                    self.inventory.append(item_to_get)
+                    print(f"You collected {item_to_get}.")
+                    self.collectibles.pop(self.player_position, None)
+                else:
+                    self.inventory.append(item_to_get)
+                    print(f"You picked up {item_to_get}.")
+                self.items[self.player_position].remove(item_to_get)
+            elif item_to_get:  
+                print(f"The item '{item_to_get}' does not exist in this room.")
+            else:
+                print("You canceled picking up an item.")
+        else:
+            print("There are no items to pick up in this room.")
+
+    def solve_puzzle(self):
+        if self.player_position in self.puzzles and not self.puzzles[self.player_position]["solved"]:
+            puzzle = self.puzzles[self.player_position]
+            answer = input(f"Solve this puzzle: {puzzle['question']}\nEnter your answer: ")
+            if answer == puzzle["answer"]:
+                print("You solved the puzzle!")
+                puzzle["solved"] = True
+                self.inventory.append("Puzzle Key")
+            else:
+                print("Wrong answer.")
+
+    def use_item(self):
+        if self.inventory:
+            item = input(f"Which item do you want to use? {', '.join(self.inventory)}: ").strip().lower()
+            if item in self.inventory:
+                if item == "antidote" and self.player_position == "Maintenance Room":
+                    print("You used the antidote, restoring 20 health points.")
+                    self.health = min(100, self.health + 20)
+                elif item == "wire cutters" and self.player_position == "Control Room":
+                    print("You used the wire cutters to disable the security lock. The code7 is now accessible.")
+                    self.collectibles["Control Room"] = "code7"
+                elif item == "puzzle key" and self.player_position == "Secret Passage":
+                    print("You used the puzzle key to unlock the secret passage.")
+                    self.rooms["Cell Block A"]["South"] = "Secret Passage"
+                else:
+                    print("This item can't be used here.")
+                return True  # Item was used
+            else:
+                print("You don't have that item in your inventory.")
+                return False  # Item was not used
+        else:
+            print("Your inventory is empty.")
+            return False  # No items to use
+
+    def all_items_collected(self):
+        return len(self.collectibles) == 0
+
+    def play(self):
+        print("Welcome to Escape from Sentinel Prison! Your mission is to collect all codes and confront the Warden.")
+        while True:
+            print(f"\nYou are now in {self.player_position}.")
+            print(self.get_map_hint(self.player_position))
+            if self.player_position != "Entrance" and self.player_position != "Warden's Office":
+                print(f"Items in this room: {', '.join(self.items.get(self.player_position, []))}")
+                if self.player_position in self.puzzles and not self.puzzles[self.player_position]["solved"]:
+                    print("There's an unsolved puzzle here.")
+            print(f"Directions available: {', '.join(self.valid_directions())}")
+            print(f"Items in your inventory: {', '.join(self.inventory)}")
+            print(f"Your health: {self.health}")
+
+            action = input("Do you want to (M)ove, (G)et item, (S)olve puzzle, or (U)se item? Enter 'M', 'G', 'S', or 'U': ").lower()
+            if action == 'm':
+                direction = input("Enter direction (North/South/East/West): ").capitalize()
+                if not self.move(direction):
+                    break
+            elif action == 'g':
+                self.get_item()
+            elif action == 's':
+                if self.player_position in self.puzzles and not self.puzzles[self.player_position]["solved"]:
+                    self.solve_puzzle()
+                else:
+                    print("There's no puzzle to solve here.")
+            elif action == 'u':
+                if not self.use_item():
+                    print("You couldn't use an item at this time.")
+            else:
+                print("Invalid input. Please choose 'M' to move, 'G' to get an item, 'S' to solve a puzzle, or 'U' to use an item.")
+
+            if self.all_items_collected():
+                print("You've collected all the codes. Now you can challenge the Warden!")
+                if self.player_position == "Warden's Office":
+                    print("Congratulations! You've successfully escaped the prison and saved all the hostages!")
+                    break
+
+if __name__ == "__main__":
+    game = Game()
+    game.play()
 
