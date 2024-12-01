@@ -1,0 +1,101 @@
+loop. Game 
+
+
+class Game:
+    def __init__(self):
+        self.rooms = {
+            "Entrance": {"South": "Guard Post"},
+            "Guard Post": {"North": "Entrance", "East": "Cell Block A", "South": "Kitchen"},
+            "Cell Block A": {"West": "Guard Post"},
+            "Kitchen": {"North": "Guard Post", "West": "Maintenance Room", "East": "Cell Block B"},
+            "Cell Block B": {"West": "Kitchen"},
+            "Maintenance Room": {"East": "Kitchen", "South": "Control Room"},
+            "Laundry": {"South": "Control Room", "West": "Maintenance Room"},
+            "Control Room": {"North": "Maintenance Room", "East": "Laundry", "West": "Warden's Office"},
+            "Warden's Office": {"East": "Control Room"}
+        }
+        self.items = {
+            "Guard Post": "Flashlight",
+            "Cell Block A": "Lockpick",
+            "Cell Block B": "Disguise Kit",
+            "Kitchen": "Knife",
+            "Maintenance Room": "Wires",
+            "Laundry": "Uniform",
+            "Control Room": "Keycard"
+        }
+        self.player_position = "Entrance"
+        self.inventory = []
+
+    def valid_directions(self):
+        return list(self.rooms[self.player_position].keys())
+
+    def get_map_hint(self, current_position):
+        map_hint = "当前地图位置:\n"
+        for room, directions in self.rooms.items():
+            if room == current_position:
+                map_hint += f"-> {room} <-"
+            else:
+                map_hint += f"   {room}   "
+            map_hint += "\n"
+        return map_hint
+
+    def move(self, direction):
+        if direction in self.valid_directions():
+            self.player_position = self.rooms[self.player_position][direction]
+            print(f"你移动到了{self.player_position}。")
+            print(self.get_map_hint(self.player_position))
+            if self.player_position == "Warden's Office" and len(self.items) > 0:
+                print("你在收集所有物品之前就遇到了监狱长。游戏结束！")
+                return False
+        else:
+            print("无效方向，请重新输入。")
+        return True
+
+    def get_item(self):
+        if self.player_position in self.items:
+            item = self.items[self.player_position]
+            print(f"你可以选择的物品: {item}")
+            item_to_get = input("你想获取哪个物品？请输入物品名称，或按回车取消: ").strip().lower()
+            if item_to_get == item.lower():
+                self.inventory.append(item)
+                print(f"你收集了{item}。")
+                del self.items[self.player_position]
+            elif item_to_get:  # If not empty and doesn't match
+                print(f"你输入的物品 '{item_to_get}' 不存在此房间。")
+            else:
+                print("你取消了获取物品。")
+        else:
+            print("此房间没有可获取的物品。")
+
+    def all_items_collected(self):
+        return len(self.items) == 0
+
+    def play(self):
+        print("欢迎来到逃离哨兵监狱！你的任务是收集所有物品然后面对监狱长。")
+        while True:
+            print(f"\n你现在在{self.player_position}。")
+            print(self.get_map_hint(self.player_position))
+            if self.player_position != "Entrance" and self.player_position != "Warden's Office":
+                print(f"房间里的物品: {self.items.get(self.player_position, '无')}")    
+            print(f"可以移动的方向: {', '.join(self.valid_directions())}")
+            print(f"背包里的物品: {', '.join(self.inventory)}")
+
+            action = input("你想(M)移动还是(G)获取物品？请输入 'M' 或 'G': ").lower()
+            if action == 'm':
+                direction = input("请输入方向（北/南/东/西）：").capitalize()
+                if not self.move(direction):
+                    break
+            elif action == 'g':
+                self.get_item()
+            else:
+                print("输入错误，请选择 'M' 移动或 'G' 获取物品。")
+
+            if self.all_items_collected():
+                print("你已经收集了所有物品。现在你可以挑战监狱长了！")
+                if self.player_position == "Warden's Office":
+                    print("恭喜！你成功地逃出了监狱并救出了所有人质!")
+                    break
+
+if __name__ == "__main__":
+    game = Game()
+    game.play()
