@@ -321,5 +321,90 @@ while command != '4':  # Exit when user enters '4'
 ___________________________________________________________________________________
 
 
+Default parameter values
+Sometimes a function has parameters that are optional. A function can have a default parameter value for one or more parameters, meaning that a function call can optionally omit an argument, and the default parameter value will be substituted for the corresponding omitted argument.
+
+The following function prints a date in a particular style, given parameters for day, month, and year. The fourth parameter indicates the desired style, with 0 meaning American style, and 1 meaning European style. For July 30, 2012, the American style is 7/30/2012 and the European style is 30/7/2012.
+
+def print_date(day, month, year, style=0):
+    if style == 0:  # American
+        print(month, '/', day, '/', year)
+    elif style == 1:  # European
+        print(day, '/', month, '/', year)
+    else:
+        print('Invalid Style')
+
+print_date(30, 7, 2012, 0)
+print_date(30, 7, 2012, 1)
+print_date(30, 7, 2012)  # style argument not provided! Default value of 0 used
+
+
+___________________________________________________________________________________
+The fourth (and last) parameter is defined with a default value: style=0. If the function call does not provide a fourth argument, then style has value 0. A parameter's default value is the value used in the absence of an argument in the function call.
+
+The same can be done for other parameters, as in: def print_date(day=1, month=1, year=2000, style=0). If positional arguments are passed (i.e., not keyword-arguments), then only the last arguments can be omitted. The following are valid calls to this print_date() function:
+
+
+print_date(30, 7, 2012, 0)   # Defaults: none
+print_date(30, 7, 2012)      # Defaults:                            style=0
+print_date(30, 7)            # Defaults:                 year=2000, style=0
+print_date(30)               # Defaults:        month=1, year=2000, style=0
+print_date()                 # Defaults: day=1, month=1, year=2000, style=0
+
+
+
+If a parameter does not have a default value, then failing to provide an argument (either keyword or positional) generates an error.
+
+A common error is to provide a mutable object, like a list, as a default parameter. Such a definition can be problematic because the default argument object is created only once, at the time the function is defined (when the script is loaded), and not every time the function is called. Modification of the default parameter object will persist across function calls, which is likely not what a programmer intended. The below program demonstrates the problem with mutable default objects and illustrates a solution that creates a new empty list each time the function is called.
+
+Default object modification
+def append_to_list(value, my_list=[]):
+    my_list.append(value)
+    return my_list
+
+numbers = append_to_list(50)  # default list appended with 50
+print(numbers)
+numbers = append_to_list(100)  # default list appended with 100
+print(numbers)
+
+
+Solution: Make new list
+def append_to_list(value, my_list=None):  # Use default parameter value of None
+    if my_list == None:  # Create a new list if a list was not provided
+        my_list = []
+
+    my_list.append(value)
+    return my_list
+
+numbers = append_to_list(50)  # default list appended with 50
+print(numbers)
+numbers = append_to_list(100)  # default list appended with 100
+print(numbers)
+
+
+The left program shows a function append_to_list() that has an empty list as default value of my_list. A programmer might expect that each time the function is called without specifying my_list, a new empty list will be created and the result of the function will be [value]. However, the default object persists across function calls. The solution replaces the default list with None, checking for that value, and then creating a new empty list in the local scope if necessary.
+
+
+___________________________________________________________________________________
+
+Mixing keyword arguments and default parameter values
+Mixing keyword arguments and default parameter values allows a programmer to omit arbitrary arguments from a function call. Because keyword arguments use names instead of position to match arguments to parameters, any argument can be omitted as long as that argument has a default value.
+
+Consider the print_date function from above. If every parameter has a default value, then the user can use keyword arguments to pass specific arguments anywhere in the argument list. Below are some sample function calls:
+
+
+def print_date(day=1, month=1, year=2000, style=0):
+    # ...
+
+
+print_date(day=30, year=2012)   # Defaults:        month=1,            style=0
+print_date(style=1)             # Defaults: day=1, month=1, year=2000
+print_date(year=2012, month=4)  # Defaults: day=1,                     style=0
+
+
+
+
+
+
 
 
