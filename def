@@ -211,6 +211,114 @@ elif choice == 2:
 
 __________________________________________________________________
 
+(Variable and function scope
+A variable or function object is only visible to part of a program,
+known as the object's scope. When a variable is created inside a function, 
+the variable's scope is limited to inside that function. 
+In fact, because a variable's name does not exist until bound to an object, the variable's scope is actually limited to after the first assignment of the variable until the end of the function. 
+The following program highlights the scope of variable total_inches.)
+
+
+centimeters_per_inch = 2.54
+inches_per_foot = 12
+
+def height_US_to_centimeters(feet, inches):
+    """ Converts a height in feet/inches to centimeters."""
+    total_inches = (feet * inches_per_foot) + inches  # Total inches
+    centimeters = total_inches * centimeters_per_inch
+    return centimeters
+
+feet = int(input('Enter feet: '))
+inches = int(input('Enter inches: '))
+
+print('Centimeters:', height_US_to_centimeters(feet, inches))
+
+
+___________________________________________________________________________________
+
+
+
+
+By default, a few names already exist in the global namespace – those names have been omitted in the output for brevity. Notice that my_var and my_func are added into the namespace once assigned.
+
+Scope and scope resolution
+Scope is the area of code where a name is visible. Namespaces are used to make scope work. Each scope, such as global scope or a local function scope, has its own namespace. If a namespace contains a name at a specific location in the code, then that name is visible and a programmer can use it in an expression.
+
+There are at least three nested scopes that are active at any point in a program's execution: 1
+
+Built-in scope – Contains all of the built-in names of Python, such as int(), str(), list(), range(), etc.
+Global scope – Contains all globally defined names outside of any functions.
+Local scope – Usually refers to scope within the currently executing function, but is the same as global scope if no function is executing.
+When a name is referenced in code, the local scope's namespace is the first checked, followed by the global scope, and finally the built-in scope. If the name cannot be found in any namespace, the interpreter generates a NameError. The process of searching for a name in the available namespaces is called scope resolution.
+
+
+aily_cals = 2300  # Daily calories
+soda_cals = 200
+
+def drink_soda(cals_left):
+    return cals_left - soda_cals
+
+daily_cals = drink_soda(daily_cals)
+def avg(a, b):
+2	    tmp = (a + b) / 2.0  # Creates tmp in local namespace
+3	    return tmp
+4	
+5	a = 5
+6	b = 10
+7	tmp = a + b  # Creates tmp in global namespace
+8	
+9	print('Avg: {:f}'.format(avg(a, b))) 
+10	print('Sum: {:f}'.format(tmp))
+
+
+
+___________________________________________________________________________________
+
+
+zyDE 5.12.1: List argument modification.
+Address the FIXME comments. Move the respective code from the while-loop to the created function. The add_grade function has already been created.
+
+Note: split() and strip() are string methods further explained elsewhere. split() separates a string into tokens using any whitespace as the default separator. The tokens are returned in a list (i.e., 'a b c'.split() returns ['a', 'b', 'c']). strip() returns a copy of a string with leading and trailing whitespace removed.
+
+
+def add_grade(student_grades):
+    print('Entering grade. \n')
+    name, grade = input(grade_prompt).split()
+    student_grades[name] = grade
+
+# FIXME: Create delete_name function
+
+# FIXME: Create print_grades function
+
+student_grades = {}  # Create an empty dict
+grade_prompt = "Enter name and grade (Ex. 'Bob A+'):\n"
+delete_prompt = "Enter name to delete:\n"
+menu_prompt = ("1. Add/modify student grade\n"
+                "2. Delete student grade\n"
+                "3. Print student grades\n"
+                "4. Quit\n\n")
+
+command = input(menu_prompt).lower().strip()
+
+while command != '4':  # Exit when user enters '4'
+    if command == '1':
+        add_grade(student_grades)
+    elif command == '2':
+        # FIXME: Only call delete_name() here
+        print('Deleting grade.\n')
+        name = input(delete_prompt)
+        del student_grades[name]
+    elif command == '3':
+        # FIXME: Only call print_grades() here
+        print('Printing grades.\n')
+        for name, grade in student_grades.items():
+            print(name, 'has a', grade)
+    else:
+        print('Unrecognized command.\n')
+
+    command = input().lower().strip()
+
+___________________________________________________________________________________
 
 
 
