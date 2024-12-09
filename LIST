@@ -1,1 +1,95 @@
 
+
+
+Modify short_names by deleting the first element and changing the last element to Joe.
+
+Sample output with input: 'Gertrude Sam Ann Joseph'
+['Sam', 'Ann', 'Joe']
+
+
+user_input = input()
+short_names = user_input.split()
+
+''' Your solution goes here '''
+
+if len(short_names) > 1:
+    short_names.pop(0)  # Removes the first element
+    short_names[-1] = 'Joe'  # Changes the last element to 'Joe'
+elif len(short_names) == 1:
+    short_names[0] = 'Joe' 
+
+
+print(short_names)
+
+
+——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+The following (unfinished) program implements a digital line queuing system for an amusement park ride. The system allows a rider to reserve a place in line without actually having to wait. The rider simply enters a name into a program to reserve a place. Riders that purchase a VIP pass get to skip past the common riders up to the last VIP rider in line. VIPs board the ride first. (Considering the average wait time for a Disneyland ride is about 45 minutes, this might be a useful program.) For this system, an employee manually selects when the ride is dispatched (thus removing the next riders from the front of the line).
+
+Complete the following program, as described above. Once finished, add the following commands:
+
+The rider can enter a name to find the current position in line. (Hint: Use the list.index() method.)
+The rider can enter a name to remove the rider from the line.
+
+
+riders_per_ride = 3  # Number of riders per ride to dispatch
+
+line = []  # The line of riders
+num_vips = 0  # Track number of VIPs at the front of the line
+
+menu = ('(1) Reserve place in line.\n'  # Add rider to the regular line
+        '(2) Reserve place in VIP line.\n'  # Add VIP
+        '(3) Dispatch riders.\n'  # Dispatch next ride car
+        '(4) Print riders.\n'
+        '(5) Exit.\n\n')
+
+user_input = input(menu).strip().lower()
+
+while user_input != '5':
+    if user_input == '1':  # Add rider to the regular line
+        name = input('Enter name: ').strip().lower()
+        line.append(name)
+        print(f'{name} added to the regular line.')
+
+    elif user_input == '2':  # Add VIP
+        name = input('Enter VIP name: ').strip().lower()
+        line.insert(num_vips, name)  # Insert VIP at the current VIP position
+        num_vips += 1  # Increment VIP count
+        print(f'{name} added as a VIP.')
+
+    elif user_input == '3':  # Dispatch riders
+        if len(line) == 0:
+            print('No riders to dispatch.')
+        else:
+            dispatch_count = min(riders_per_ride, len(line))  # Number of riders to dispatch
+            dispatched = line[:dispatch_count]  # Riders to be removed
+            line = line[dispatch_count:]  # Remaining riders in line
+            num_vips = max(0, num_vips - dispatch_count)  # Adjust VIP count if VIPs were dispatched
+            print(f'Dispatched: {dispatched}')
+
+    elif user_input == '4':  # Print riders waiting in line
+        if len(line) == 0:
+            print('The line is empty.')
+        else:
+            print('{} person(s) waiting:'.format(len(line)), line)
+
+    else:
+        print('Unknown menu option.')
+
+    # Prompt for the next input
+    user_input = input('\nEnter command: ').strip().lower()
+
+print('Goodbye!')
+
+
+______________________________________________________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
