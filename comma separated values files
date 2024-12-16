@@ -134,6 +134,42 @@ for word in words:
 for word, freq in word_freq.items():
     print(word, freq)
 
+---------------------------------------------------
+
+
+# Step 1: Input file name
+input_file = input("Enter file name: ").strip()
+
+# Step 2: Initialize an empty dictionary
+tv_shows_dict = {}
+
+# Step 3: Read the file and process data
+with open(input_file, 'r') as file:
+    lines = file.readlines()
+    for i in range(0, len(lines), 2):  # Process every two lines
+        seasons = int(lines[i].strip())  # Extract the number of seasons
+        show = lines[i + 1].strip()      # Extract the TV show title
+
+        # Add to the dictionary
+        if seasons in tv_shows_dict:
+            tv_shows_dict[seasons].append(show)  # Append show (preserve order)
+        else:
+            tv_shows_dict[seasons] = [show]
+
+# Step 4: Write to output_keys.txt (sort by keys, but not shows)
+with open('output_keys.txt', 'w') as file_keys:
+    for seasons in sorted(tv_shows_dict.keys()):  # Sort only by keys
+        shows = "; ".join(tv_shows_dict[seasons])  # Keep original order of shows
+        file_keys.write(f"{seasons}: {shows}\n")
+
+# Step 5: Collect all TV shows, keep original order, and write to output_titles.txt
+all_shows = []
+for seasons in sorted(tv_shows_dict.keys()):  # Process keys in order
+    all_shows.extend(tv_shows_dict[seasons])  # Add shows as they appear
+
+with open('output_titles.txt', 'w') as file_titles:
+    for show in all_shows:  # Write shows in their original order
+        file_titles.write(show + "\n")
 
 
 
