@@ -410,4 +410,172 @@ class Game:
 if __name__ == "__main__":
     game = Game()
     game.play()
+----------------------------------------------------------------------------
+homnework 2
+
+class SpyGame:
+    # Initialize the game with departments, items, traps, and player attributes
+    def __init__(self):
+        # Map: Each department connects to others via directions (N/S/E/W)
+        self.departments = {
+            "Entrance": {"South": "Lobby"},
+            "Lobby": {"North": "Entrance", "East": "Communications", "South": "Cafeteria"},
+            "Communications": {"West": "Lobby", "South": "Server Room"},
+            "Cafeteria": {"North": "Lobby", "West": "Maintenance", "East": "Research Lab"},
+            "Research Lab": {"West": "Cafeteria", "South": "Medical Bay"},
+            "Maintenance": {"East": "Cafeteria", "South": "Control Room"},
+            "Server Room": {"North": "Communications", "East": "Medical Bay"},
+            "Control Room": {"North": "Maintenance", "East": "Armory", "West": "Director's Office"},
+            "Director's Office": {"East": "Control Room"},  # Final room
+            "Armory": {"West": "Control Room"},
+            "Medical Bay": {"North": "Research Lab", "West": "Server Room"}
+        }
+
+        # Critical intelligence to collect in key departments
+        self.intelligence_items = {
+            "Lobby": "Intel1",
+            "Communications": "Intel2",
+            "Research Lab": "Intel3",
+            "Maintenance": "Intel4",
+            "Server Room": "Intel5",
+            "Control Room": "Intel6",
+            "Director's Office": "Intel7"
+        }
+
+        # Items available in each department (intelligence + distractions)
+        self.items = {
+            "Lobby": ["Intel1", "Coffee Mug"],
+            "Communications": ["Intel2", "Old Radio"],
+            "Research Lab": ["Intel3", "Broken Drone"],
+            "Maintenance": ["Intel4", "Wrench"],
+            "Server Room": ["Intel5", "Data Cable"],
+            "Control Room": ["Intel6", "USB Drive"],
+            "Director's Office": ["Intel7", "Confidential Folder"],
+        }
+
+        # Spy's initial position, inventory, and detection level
+        self.spy_position = "Entrance"  # Start of the game
+        self.inventory = []             # Items collected
+        self.detection_level = 0        # Spy detection level (too high = caught!)
+
+        # Security traps in high-security areas
+        self.traps = {
+            "Maintenance": {"active": True, "detection": 30},
+            "Armory": {"active": True, "detection": 40}
+        }
+
+    # Get valid directions available to move in the current department
+    def valid_directions(self):
+        return list(self.departments[self.spy_position].keys())
+
+    # Handle movement between departments
+    def move(self, direction):
+        """
+        Moves the spy in the specified direction.
+        Triggers traps in high-security areas.
+        """
+        if direction in self.valid_directions():  # Check if the move is valid
+            new_department = self.departments[self.spy_position][direction]
+            self.spy_position = new_department  # Update spy position
+            print(f"You entered the {self.spy_position}.")
+
+            # Trigger traps if in a high-security department
+            if new_department in self.traps and self.traps[new_department]["active"]:
+                detection = self.traps[new_department]["detection"]
+                self.detection_level += detection
+                print(f"ALERT! Security systems activated! Detection level increased by {detection}.")
+                print(f"Current detection level: {self.detection_level}%")
+                self.traps[new_department]["active"] = False  # Deactivate trap after triggering
+
+                # End the game if detection level exceeds 100%
+                if self.detection_level >= 100:
+                    print("You've been detected and captured! Mission failed.")
+                    return False
+
+            # Check for premature entry into the Director's Office
+            if self.spy_position == "Director's Office" and len(self.intelligence_items) > 0:
+                print("You entered the Director's Office without collecting all intelligence. You've been caught!")
+                return False
+        else:
+            print("Invalid direction. Choose another path.")
+        return True
+
+    # Handle collecting intelligence items in the current department
+    def get_item(self):
+        """
+        Allows the spy to collect intelligence items.
+        Removes the collected items from the department.
+        """
+        # Check if items exist in the current department
+        if self.spy_position in self.items and self.items[self.spy_position]:
+            print(f"Items in this department: {', '.join(self.items[self.spy_position])}")
+            item_to_get = input("Which item do you want to collect? (or press Enter to skip): ").strip().lower()
+
+            # Normalize items for case-insensitive matching
+            available_items = {item.lower(): item for item in self.items[self.spy_position]}
+
+            # Check if input matches an item
+            if item_to_get in available_items:
+                real_item = available_items[item_to_get]
+                if real_item in self.intelligence_items.values():
+                    self.inventory.append(real_item)
+                    print(f"Critical intelligence collected: {real_item}.")
+                    self.intelligence_items.pop(self.spy_position, None)  # Remove intelligence from the map
+                else:
+                    self.inventory.append(real_item)
+                    print(f"Collected {real_item}.")
+                self.items[self.spy_position].remove(real_item)  # Remove item from the department
+            elif item_to_get:
+                print(f"'{item_to_get}' is not in this department.")
+            else:
+                print("You chose not to collect anything.")
+        else:
+            print("No items to collect in this department.")
+
+    # Check if all intelligence items have been collected
+    def all_intelligence_collected(self):
+        """
+        Returns True if all intelligence has been collected.
+        """
+        return len(self.intelligence_items) == 0
+
+    # Main game loop
+    def play(self):
+        """
+        Main game loop: Move, collect items, and avoid detection.
+        Game ends when all intelligence is collected, or the spy is caught.
+        """
+        print("Welcome, Agent. Your mission: Infiltrate the headquarters and steal all critical intelligence.")
+        print("Avoid detection at all costs. Good luck!")
+
+        while True:
+            # Display current game status
+            print(f"\nYou are now in the {self.spy_position}.")
+            print(f"Available directions: {', '.join(self.valid_directions())}")
+            print(f"Items in your inventory: {', '.join(self.inventory)}")
+            print(f"Detection Level: {self.detection_level}%")
+
+            # Prompt the player for action
+            action = input("Do you want to (M)ove or (G)et item? Enter 'M' or 'G': ").lower()
+            if action == 'm':  # Move to a different department
+                direction = input("Enter direction (North/South/East/West): ").capitalize()
+                if not self.move(direction):
+                    break
+            elif action == 'g':  # Collect items in the department
+                self.get_item()
+            else:
+                print("Invalid action. Please enter 'M' to move or 'G' to collect items.")
+
+            # Check for win condition
+            if self.all_intelligence_collected():
+                print("Mission update: All critical intelligence collected. Head to the Director's Office to complete your mission.")
+                if self.spy_position == "Director's Office":
+                    print("Congratulations, Agent! You've successfully infiltrated the headquarters and completed your mission!")
+                    break
+
+
+if __name__ == "__main__":
+    # Start the game
+    game = SpyGame()
+    game.play()
 
