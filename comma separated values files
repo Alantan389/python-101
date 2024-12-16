@@ -95,6 +95,44 @@ with open('gradeswr.csv', 'w') as csvfile:
 100,50,29
 76,32,330
 
+------------------------------------------------------------------------
+
+this is input1 files
+
+hello	cat	man	hey	dog	boy	Hello	man	cat	woman	dog	Cat	hey	boy
+
+
+
+
+
+import csv
+
+# Step 1: Input file name
+file_name = input().strip()  # Input the file name, e.g., 'input1.csv'
+
+# Step 2: Open the file and read all words
+words = []
+try:
+    with open(file_name, 'r') as csv_file:
+        reader = csv.reader(csv_file)
+        for row in reader:
+            for word in row:  # Directly access each word from the row
+                words.append(word.strip())  # Strip any whitespace
+except FileNotFoundError:
+    print(f"Error: File '{file_name}' not found.")
+    exit()
+
+# Step 3: Count word frequencies while preserving order
+word_freq = {}
+for word in words:
+    if word in word_freq:
+        word_freq[word] += 1
+    else:
+        word_freq[word] = 1
+
+# Step 4: Print results in the order of appearance
+for word, freq in word_freq.items():
+    print(word, freq)
 
 
 
